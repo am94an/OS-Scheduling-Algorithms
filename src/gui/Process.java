@@ -1,16 +1,15 @@
-package os.project;
-
-
+package gui;
 
 public class Process {
     String name;
     int arrivalTime;
     int burstTime;
-    int priority;
     int waitingTime;
     int turnaroundTime;
-    int remainingTime;
     int startTime;
+    int priority;
+    int remainingTime;
+    int currentTime;
 
     public Process(String name, int arrivalTime, int burstTime, int priority) {
         this.name = name;
@@ -19,7 +18,8 @@ public class Process {
         this.priority = priority;
         this.waitingTime = 0;
         this.turnaroundTime = 0;
-        this.remainingTime = burstTime;
+        this.startTime = -1;  
+        this.remainingTime = burstTime;  
     }
 
     public int getRemainingTime() {
@@ -29,7 +29,8 @@ public class Process {
     public void setRemainingTime(int remainingTime) {
         this.remainingTime = remainingTime;
     }
-        public int getStartTime() {
+
+    public int getStartTime() {
         return startTime;
     }
 

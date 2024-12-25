@@ -1,7 +1,7 @@
-
-package os.project;
+package gui;
 
 import java.util.*;
+import os.project.OutputPrinter;
 
 public class SchedulingAlgorithms {
 
@@ -17,8 +17,9 @@ public class SchedulingAlgorithms {
             currentTime += process.burstTime;
             process.turnaroundTime = process.waitingTime + process.burstTime;
             completedProcesses.add(process);
+
         }
-        
+
         return completedProcesses;
     }
 
@@ -28,8 +29,8 @@ public class SchedulingAlgorithms {
         processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
         ArrayList<Process> readyQueue = new ArrayList<>();
         int currentTime = 0;
-        int totalWaitingTime = 0;
-        int totalTurnaroundTime = 0;
+
+        System.out.println("\nSJF Scheduling Execution:");
 
         while (!processes.isEmpty() || !readyQueue.isEmpty()) {
             while (!processes.isEmpty() && processes.get(0).arrivalTime <= currentTime) {
@@ -40,20 +41,23 @@ public class SchedulingAlgorithms {
                 readyQueue.sort(Comparator.comparingInt(p -> p.burstTime));
                 Process process = readyQueue.remove(0);
                 process.waitingTime = currentTime - process.arrivalTime;
-                totalWaitingTime += process.waitingTime;
                 currentTime += process.burstTime;
                 process.turnaroundTime = process.waitingTime + process.burstTime;
-                totalTurnaroundTime += process.turnaroundTime;
                 completedProcesses.add(process);
+
+                System.out.println("Process " + process.name + " executed from " 
+                                   + (currentTime - process.burstTime) + " to " + currentTime 
+                                   + ", Waiting Time: " + process.waitingTime 
+                                   + ", Turnaround Time: " + process.turnaroundTime);
             } else {
                 currentTime++;
             }
         }
-                
+
         return completedProcesses;
     }
 
-    // Round Robin Scheduling
+// Round Robin Scheduling
 public static ArrayList<Process> executeRoundRobin(ArrayList<Process> processes, int timeQuantum) {
     Queue<Process> processQueue = new ArrayDeque<>();
     ArrayList<Process> completedProcesses = new ArrayList<>();
@@ -82,11 +86,9 @@ public static ArrayList<Process> executeRoundRobin(ArrayList<Process> processes,
 
         int executionTime = Math.min(timeQuantum, process.getRemainingTime());
         process.setRemainingTime(process.getRemainingTime() - executionTime);
-        currentTime += executionTime;
-
-        
         executionTimeline.add(String.format("Time %d-%d: Process %s executed", 
-                                             currentTime - executionTime, currentTime, process.name));
+                                             currentTime, currentTime + executionTime, process.name));
+        currentTime += executionTime;
 
         if (process.getRemainingTime() == 0) {
             process.turnaroundTime = currentTime - process.arrivalTime;
@@ -110,11 +112,24 @@ public static ArrayList<Process> executeRoundRobin(ArrayList<Process> processes,
         totalWaitingTime += p.waitingTime;
     }
 
+    double avgTurnaroundTime = totalTurnaroundTime / completedProcesses.size();
+    double avgWaitingTime = totalWaitingTime / completedProcesses.size();
+
+    OutputPrinter.printAverageTimes(avgTurnaroundTime, avgWaitingTime);
+
+    System.out.println("-------------------------------------------------------------------");
+    System.out.println("| Name | Arrival Time | Burst Time | Waiting Time | Turnaround Time |");
+    System.out.println("-------------------------------------------------------------------");
+    for (Process p : completedProcesses) {
+        System.out.printf("| %-4s | %-12d | %-10d | %-12d | %-15d |%n", 
+                          p.name, p.arrivalTime, p.burstTime, p.waitingTime, p.turnaroundTime);
+    }
+    System.out.println("-------------------------------------------------------------------");
 
     return completedProcesses;
 }
 
-    // Priority Scheduling (Non-Preemptive)
+ // Priority Scheduling (Non-Preemptive)
 public static ArrayList<Process> executePriorityNonPreemptive(ArrayList<Process> processes) {
     processes.sort(Comparator.comparingInt((Process p) -> p.arrivalTime)
                              .thenComparingInt(p -> p.priority));
@@ -155,17 +170,43 @@ public static ArrayList<Process> executePriorityNonPreemptive(ArrayList<Process>
                            + ", Turnaround Time: " + nextProcess.turnaroundTime);
     }
 
-
-    double totalTurnaroundTime = 0, totalWaitingTime = 0;
-    for (Process p : completedProcesses) {
-        totalTurnaroundTime += p.turnaroundTime;
-        totalWaitingTime += p.waitingTime;
-    }
-
-    double avgTurnaroundTime = totalTurnaroundTime / completedProcesses.size();
-    double avgWaitingTime = totalWaitingTime / completedProcesses.size();
-
-
     return completedProcesses;
 }
+
+
+// Priority Scheduling (Preemptive)
+    public static ArrayList<Process> executePriorityPreemptive(ArrayList<Process> processes) {
+        processes.sort(Comparator.comparingInt(p -> p.priority));
+
+        ArrayList<Process> completedProcesses = new ArrayList<>();
+        int currentTime = 0;
+
+        PriorityQueue<Process> readyQueue = new PriorityQueue<>(Comparator.comparingInt(p -> p.priority));
+
+        System.out.println("\nPriority Preemptive Scheduling Execution:");
+
+        while (!processes.isEmpty() || !readyQueue.isEmpty()) {
+            while (!processes.isEmpty() && processes.get(0).arrivalTime <= currentTime) {
+                readyQueue.add(processes.remove(0));
+            }
+
+            if (!readyQueue.isEmpty()) {
+                Process currentProcess = readyQueue.poll();
+                int executionTime = currentProcess.burstTime;
+                currentProcess.turnaroundTime = currentTime + executionTime - currentProcess.arrivalTime;
+                currentProcess.waitingTime = currentProcess.turnaroundTime - currentProcess.burstTime;
+                completedProcesses.add(currentProcess);
+                currentTime += executionTime;
+
+                System.out.println("Process " + currentProcess.name + " executed from " 
+                                   + (currentTime - executionTime) + " to " + currentTime 
+                                   + ", Waiting Time: " + currentProcess.waitingTime 
+                                   + ", Turnaround Time: " + currentProcess.turnaroundTime);
+            } else {
+                currentTime++;
+            }
+        }
+
+        return completedProcesses;
+    }
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 
-class ProcessScanner {
+public class ProcessScanner {
     public static ArrayList<Process> scanProcesses(int algorithmChoice) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Process> processes = new ArrayList<>();
@@ -21,7 +21,7 @@ class ProcessScanner {
             int burstTime = scanner.nextInt();
 
             int priority = 0; 
-            if (algorithmChoice == 4 || algorithmChoice == 5) { 
+            if (algorithmChoice == 4) { 
                 System.out.print("Enter priority: ");
                 priority = scanner.nextInt();
             }

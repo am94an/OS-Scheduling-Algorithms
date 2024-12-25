@@ -3,7 +3,7 @@ package os.project;
 
 import java.util.ArrayList;
 
-class OutputPrinter {
+public class OutputPrinter {
     public static void printProcesses(ArrayList<Process> processes) {
         System.out.println("-------------------------------------------------------------------");
         System.out.println("| Name | Arrival Time | Burst Time | Waiting Time | Turnaround Time |");

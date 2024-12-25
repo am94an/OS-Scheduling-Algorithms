@@ -12,8 +12,7 @@ public class OsProject {
             System.out.println("2. Shortest Job First (SJF)");
             System.out.println("3. Round Robin (RR)");
             System.out.println("4. Priority (Non-Preemptive)");
-            System.out.println("5. Priority (Preemptive)");
-            System.out.print("Enter the number of the algorithm (1-5): ");
+            System.out.print("Enter the number of the algorithm (1-4): ");
             int choice = scanner.nextInt();
 
             ArrayList<Process> processes = ProcessScanner.scanProcesses(choice);
@@ -37,11 +36,8 @@ public class OsProject {
                 case 4:
                     completedProcesses = SchedulingAlgorithms.executePriorityNonPreemptive(processes);
                     break;
-                case 5:
-                    completedProcesses = SchedulingAlgorithms.executePriorityPreemptive(processes);
-                    break;
                 default:
-                    System.out.println("Invalid choice! Please enter a number between 1 and 5.");
+                    System.out.println("Invalid choice! Please enter a number between 1 and 4.");
                     return;
             }
 
